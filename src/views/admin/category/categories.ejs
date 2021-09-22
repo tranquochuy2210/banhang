@@ -1,0 +1,79 @@
+<%-include ('../../partials/header') %>
+<div class="row">
+    <%-include('../sidebar')%>
+    <div class="col-10 my-3">
+        <div class="my-3">
+            ><a href="/admin/main-categories">danh mục chính</a>
+            ><a href="/admin/categories/<%=mainCategory.id%>"><%=mainCategory.name%></a>
+        </div>
+        
+        <div id="message">
+        </div>
+        <div>
+            <a href="/admin/add-category/<%=mainCategory.id%>"><button class="btn btn-primary">thêm danh mục</button></a>
+        </div>
+        <div class="col-10 mx-auto my-3">
+            <table class="table">
+                <thead>
+                    <th>id</th>
+                    <th>tên</th>
+                    <th>logo</th>
+                    <th>xóa</th>
+                </thead>
+                <tbody>
+                    <%categories.forEach((category)=>{%>
+                        <tr>
+                            <td><%=category.id%></td>
+                            <td><%=category.name%></td>
+                            <td class="row col-7">
+                                <div class="col-2 mx-2">
+                                    <img src="<%=category.logo%>" alt="" width="50px" height="50px">
+                                </div>
+                                <div class="col-9">
+                                    <input type="file" id="logo-<%=category.id%>" class="form-control form-control-sm" name="logo" onchange="changeLogo(this)">
+                                </div>
+                            </td>
+                            <td id="delete-<%=category.id%>" style="cursor:pointer" onclick="deleteCategory(this)">xóa</td>
+                        </tr>
+                    <%})%>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<%-include ('../../partials/footer') %>
+<script>
+    const message=document.getElementById('message')
+        const changeLogo=async (element)=>{
+            const id=element.id.split('-')[1]
+            const formData=new FormData()    
+            formData.append('category',element.files[0])
+            const res=await fetch(`/admin/category/change-logo/${id}`,{
+                method:'PUT',
+                body:formData
+            })
+            const data=await res.json()
+            if(data.success){
+                location.reload()
+            }else{
+                message.innerHTML=`<p class="text-danger">${data.message}</p>`
+            }
+        }
+        const deleteCategory=async(element)=>{
+            if(confirm('bạn có muốn xóa danh mục này ?')){
+                const id=element.id.split('-')[1]
+                const res=await fetch(`/admin/delete-category/${id}`)
+                const data=await res.json()
+                if(data.success){
+                    location.reload()
+                }else{
+                    message.innerHTML=`<p class="text-danger">${data.message}</p>`
+                }
+            }else{
+                return false
+            }}
+    </script>
+
+
+       

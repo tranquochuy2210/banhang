@@ -1,0 +1,24 @@
+<%-include ('../../partials/header') %>
+<div class="row">
+    <%-include('../sidebar')%>
+    <div class="col-10">
+        <a href="/admin/shipping-companies">quay lai</a>
+        <h2>
+            Tạo công ty vận chuyển
+        </h2>
+        <form action="/admin/add-shipping-company" method="POST" class="col-6 my-3">
+            <div class="my-3">
+                <label for="name" class="form-label">Tên công ty</label>
+                <input type="text" name="name" id="name" class="form-control">
+            </div>
+            <div  class="my-3">
+                <label for="time" class="form-label">Thời gian vận chuyển</label>
+                <input type="number" name="time" id="time" min="0" class="form-control col-1">
+            </div>
+            <div  class="my-3">
+                <button class="btn btn-primary">tạo</button>
+            </div>
+        </form>
+    </div>
+</div>
+<%-include ('../../partials/footer') %>

@@ -1,0 +1,64 @@
+<%-include ('../../partials/header') %>
+<div class="row">
+    <%-include('../sidebar')%>
+    <div class="col-10 my-3">
+        <div>
+            <form action="/admin/add-banner" method="POST" class="row" enctype="multipart/form-data">
+                <div class="col-10">
+                    <label for="banner" class="form-lable">Tạo banner</label>
+                    <input type="file" class="form-control" id="" name="banner">
+                </div>
+                <div class="col-1">
+                    <br>
+                    <button class="btn btn-primary">tạo</button>
+                </div>
+            </form>
+        </div>
+        <div class="p-4">
+            <table class="table table-bordered">
+                <thead class="text-center">
+                    <th>#</th>
+                    <th>image</th>
+                    <th>trạng thái</th>
+                    <th>xóa</th>
+                </thead>
+                <tbody>
+                    <%banners.forEach((banner)=>{%>
+                        <tr class="text-center">
+                            <td><%=banner.id%></td>
+                            <td><img src="<%=banner.image%>" alt="" width="300px" height="100px"></td>
+                            <td>
+                                <%if(banner.status){%>
+                                    <input type="checkbox" class="form-check-input" id="status-<%=banner.id%>" checked onchange="changeStatus(this)">
+                                <%}else{%>
+                                    <input type="checkbox" class="form-check-input" id="status-<%=banner.id%>" onchange="changeStatus(this)">
+                                <%}%>
+                                <label for="" class="form-check-label">show</label>
+                            </td>
+                            <td><a href="/admin/delete-banner/<%=banner.id%>">xóa</a></td>
+                        </tr>
+                    <%})%>
+                    <tr></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<script>
+    const changeStatus=async(element)=>{
+        try{
+            element.setAttribute('disabled','disabled')
+            const id=element.id.split('-')[1]
+            const res=await fetch(`/admin/change-status/${id}`)
+            const data=await res.json()
+            if(data.success){
+                element.removeAttribute('disabled')
+            }else{
+                location.reload()
+            }
+        }catch(error){
+            console.log(error)
+        }
+    }
+</script>
+<%-include ('../../partials/footer') %>

@@ -1,0 +1,113 @@
+<%- include ('./partials/header') %>
+<div class="fluid-container bg-light ">
+    <div class="bg-white col-10 mx-auto p-3">
+        <div class="row p-3">
+            <div class="row p-1 col-6">
+                <h1 class="text-danger">Danh mục</h1>
+                <%mainCategories.forEach((mainCategory)=>{%>
+                    <div class="col-2 shadow p-3 text-wrap mx-1">
+                        <a href="/main-category/get-category/<%=mainCategory.id%>" class="text-decoration-none text-black"><%=mainCategory.name%></a>
+                    </div>
+                <%})%>
+            </div>
+            <div class="col-6 p-5">
+                <div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel">
+                    <div class="carousel-indicators">
+                        <%banners.forEach((banner,index)=>{%>
+                            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="<%=index%>" class="active" aria-current="true" aria-label="Slide 1"></button>
+                        <%})%>
+                    </div>
+                    <div class="carousel-inner">
+                        <%banners.forEach((banner,index)=>{%>
+                            <%if(index===0){%>
+                                <div class="carousel-item active">
+                                    <img src="<%=banner.image%>" class="d-block w-100" >
+                                </div>
+                            <%}else{%>
+                                <div class="carousel-item">
+                                    <img src="<%=banner.image%>" class="d-block w-100" >
+                                </div>
+                            <%}%>
+                            
+                        <%})%>
+                    </div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+                      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                      <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+                      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                      <span class="visually-hidden">Next</span>
+                    </button>
+                  </div>
+            </div>
+        </div>
+        <div>
+            <h1 class="text-primary">Đang FLASH SALE</h1>
+            <section id="on-flashsale-item">
+                <div class="owl-carousel owl-theme">
+                    <%onSaleItems.forEach((item)=>{%>
+                        <div class="card px-3 m-2">
+                            <img src="<%=item.images[0]%>" height="180px" class="card-img-top" alt="...">
+                            <div class="card-body">
+                                <h5 class="card-title"><%=item.name%></h5>
+                                <p class="card-text"><%=item.originalPrice.toLocaleString ("en-US")%> đ</p>
+                                <p><%=item.onSale%></p>
+                                <a href="/get-item/<%=item.id%>" class="btn btn-primary">xem</a>
+                            </div>
+                        </div>
+                    <%})%>
+                </div>
+            </section>
+            
+            
+
+        <div>
+            <h1 class="text-primary">Sắp FLASH SALE</h1>
+            <section id="upcoming-flashsale-item">
+                <div class="owl-carousel owl-theme">
+                    <%flashSaleItem.forEach((item)=>{%>
+                        <div class="card px-3 m-2">
+                            <img src="<%=item.images[0]%>" height="180px" class="card-img-top" alt="...">
+                            <div class="card-body">
+                                <h5 class="card-title"><%=item.name%></h5>
+                                <p class="card-text"><%=item.originalPrice.toLocaleString ("en-US")%> đ</p>
+                                <p><%=item.countDown%></p>
+                                <a href="/get-item/<%=item.id%>" class="btn btn-primary">xem</a>
+                            </div>
+                        </div>
+                    <%})%>
+                </div>
+                
+            </section>
+        </div>
+        <div >
+            <h1 class="text-primary">Gợi ý hôm nay</h1>
+            <div class="row">
+                <%randomItem.forEach((item)=>{%>
+                    <div class="card col-sm-2 px-3">
+                        <img src="<%=item.images[0]%>" height="200px" class="card-img-top" alt="...">
+                        <div class="card-body">
+                            <h5 class="card-title"><%=item.name%></h5>
+                            <p class="card-text"><%=item.originalPrice.toLocaleString ("en-US")%> đ</p>
+                            <a href="/get-item/<%=item.id%>" class="btn btn-primary">xem</a>
+                        </div>
+                    </div>
+                <%})%>
+            </div>
+        </div>
+    </div>
+ </div>
+<%- include ('./partials/footer') %>
+<script>
+    $(document).ready(function(){
+        $(".owl-carousel").owlCarousel({
+        autoplay:true,
+        autoplayhoverpause:true,
+        autoplaytimeout:100,
+        items:5,
+        nav:true,
+        loop:true
+    })
+    })
+</script>

@@ -1,0 +1,190 @@
+<%-include ("../../partials/header") %>
+<div class="fluid-container py-3 bg-light row">
+    <%-include ('../sidebar') %>
+    <div class="col-9 bg-white border-3 p-5">
+        <div class="float-end">
+            <a href="/my-shop/add-voucher/<%=item.id%>">
+                <button class="btn btn-primary">thêm voucher</button>
+            </a>
+        </div>
+        <h1>item: <%=item.name%></h1>
+        <p id="error"></p>
+        <p><b>id: </b><%=item.id%></p>
+        <p>đã bán: <%=item.sold%></p>
+        <form enctype="multipart/form-data">
+            <div class="row">
+                <% item.images.forEach((image)=>{ %>
+                    <div class="col-3">
+                        <img src="<%=image%>" class=" d-block w-100"  height="300px" alt="">                     
+                        <button class="btn btn-primary delete-image-button" id="<%=image%>">xóa ảnh</button>
+                    </div>
+                <%})%>
+            </div>
+            <div>
+                <label for="images">thêm ảnh</label>
+                <input type="file" name="items" class="form-control" id="images" multiple>
+            </div>
+            
+            <div class="col-5">
+                <label for="material" class="form-label">chất liệu</label>
+                <input type="text" class="form-control" name="material" id="material" value="<%=item.material%>" >
+            </div>
+            <div class="col-6">
+                <label for="original-price" class="form-label"> giá gốc</label>
+                <input type="number" class="form-control" step="1000" name="originalPrice" id="original-price" value="<%=item.originalPrice%>">
+            </div>
+            <div class="col-5">
+                <label for="discount" class="form-label">giảm giá (%)</label>
+                <input type="number" class="form-control"  name="discount" id="discount" value="<%=item.discount%>" >
+            </div>
+            <div class="col-6">
+                <label for="stock" class="form-label">stock</label>
+                <input type="number" class="form-control" name="stock" id="stock" value="<%=item.stock%>">
+            </div>
+            <div class="col-6">
+                <label for="flash-sale-time" class="form-label">flash Sale time</label>
+                <input type="datetime-local" class="form-control" name="flashSaleTime" id="flash-sale-time" value="<%=item.flashSaleTime%>">
+            </div>
+            <div class="col-6">
+                <label for="percent" class="form-label">phần trăm</label>
+                <input type="number" class="form-control" name="percent" id="percent" value="<%=item.flashSale.percent%>">
+                <label for="duration" class="form-label">kéo dài(phút))</label>
+                <input type="number" class="form-control" name="duration" id="duration" value="<%= item.flashSale.duration %>">
+            </div>
+            <div class="row my-3">
+                <div class="col-6">
+                    <label for="mainCategory">danh mục chính</label>
+                    <select name="mainCategory" id="mainCategory" class="form-select" onchange="loadCategory(this)" required>
+                        <%mainCategories.forEach((mainCategory)=>{%>
+                            <option value="<%=mainCategory.id%>" <%=mainCategory.id==item.Category.MainCategory.id?"selected":""%>><%=mainCategory.name%></option>
+                        <%})%>
+                    </select>
+                </div>
+                <div class="col-6">
+                    <label for="category">danh mục con</label>
+                    <select name="category" id="category" class="form-select" required>
+                        <%categories.forEach((category)=>{%>
+                            <%if(category.mainCategoryId===item.Category.MainCategory.id){%>
+                                <option value="<%=category.id%>" <%=item.Category.id===category.id?'selected':''%> ><%=category.name%></option>
+                            <%}%>
+                        <%})%>
+                    </select>
+                </div>
+            </div>
+            <div class="col-12" >
+                <label for="description" class="form-label">mô tả</label>
+                <textarea name="description" id="description">
+                    <%-item.description%>
+                </textarea>
+            </div>
+            <div class="col-2 my-3">
+                <button class="btn btn-primary">chỉnh sửa</button>
+            </div>
+            
+        </form>
+       
+        <button class="btn btn-danger" onclick="deleteItem()">
+            xóa sản phẩm 
+        </button>
+    </div>
+</div>
+<%-include ("../../partials/footer") %>
+
+
+
+<script>
+    $(document).ready(function() {
+        $('#description').summernote({
+        tabsize: 2,
+        height: 200,
+        toolbar: [
+          ['style', ['style']],
+          ['font', ['bold', 'underline', 'clear']],
+          ['color', ['color']],
+          ['para', ['ul', 'ol', 'paragraph']],
+          ['table', ['table']],
+          ['insert', ['link', 'picture', 'video']],
+          ['view', ['fullscreen', 'codeview', 'help']]
+        ]
+      });
+    });
+</script>
+<script>
+    const flashSaleTime=document.getElementById('flash-sale-time')
+    const percent=document.getElementById('percent')
+    const duration=document.getElementById('duration')
+    const category=document.getElementById('category')
+    flashSaleTime.setAttribute('min',moment(Date.now()).format('YYYY-MM-DDTHH:mm') )
+    flashSaleTime.addEventListener('input',()=>{
+        percent.setAttribute('required','required')
+        duration.setAttribute('required','required')
+    })
+    const loadCategory=async(element)=>{
+        try{
+            const res=await fetch(`/my-shop/categories/${element.value}`)
+            const data=await res.json()
+            category.innerHTML=''
+            data.categories.forEach((item)=>{
+                category.insertAdjacentHTML('beforeend',`<option value="${item.id}">${item.name}</option>`)
+            })
+        }catch(error){
+            error.innerHTML=error.message
+        }
+    }
+    const deleteImageBtns=document.querySelectorAll('.delete-image-button')
+    deleteImageBtns.forEach((btn)=>{
+        btn.addEventListener('click',async (e)=>{
+            let res=await fetch(`/my-shop/delete-image/<%=item.id%>`,{
+                method:"DELETE",
+                headers:{ 'Content-Type':'application/json'},
+                body:JSON.stringify({image:`${e.target.id}`})
+            })
+            let data=await res.json()
+            if(data.success){
+                location.reload()
+            }else{
+                document.getElementById('error').innerHTML=`${data.message}`
+            }
+            console.log(data)
+        })
+    })
+    
+    const form=document.querySelector('form')
+
+    const images=document.getElementById('images')
+    form.addEventListener('submit',async(e)=>{
+        e.preventDefault()
+        const formData=new FormData(form)
+        const duration=document.getElementById('duration')
+        const percent=document.getElementById('percent')
+        const flashSale=JSON.stringify({duration:duration.value,percent:percent.value})
+        formData.append('flashSale',flashSale)
+        const res=await fetch('/my-shop/edit-item/<%=item.id%>',{
+            method:'PUT',
+            body: formData
+        })
+        const data=await res.json()
+        if(data.success){
+            location.reload()
+        }else{
+            document.getElementById('error').innerHTML=`${data.message}`
+        }
+    })
+    const deleteItem=async()=>{
+        if(confirm('bạn có muốn xóa sản phẩm này không')){
+            const res=await fetch('/my-shop/delete-item/<%=item.id%>',{
+                method:'DELETE'
+            })
+            const data=await res.json()
+            if(data.success){
+                location.assign('/my-shop/items')
+            }else{
+                document.getElementById('error').innerHTML=`${data.message}`
+            }
+        }else{
+            return false
+        }
+    }
+</script>
+
+

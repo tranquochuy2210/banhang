@@ -1,0 +1,10 @@
+POST http://localhost:3000/login
+Content-Type: application/json
+
+{
+    "email":"tranquochuy221096@gmail.com",
+    "password":"claybon123"
+}
+###
+GET  http://localhost:3000/homepage
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjQsImlhdCI6MTYyODg0MjIxMjExNH0.4R-H6j1hxHZlQBey_P1R7C8v-jVv2JtsNprf5RpGDTw

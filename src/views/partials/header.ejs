@@ -1,0 +1,75 @@
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/stylesheet/bootstrap.min.css" type="text/css">
+    <link rel="stylesheet" href="/summernote/summernote.min.css">
+    <link rel="stylesheet" href="/stylesheet/owl.carousel.min.css">
+    <link rel="stylesheet" href="/stylesheet/owl.theme.default.css">
+    <script src="https://kit.fontawesome.com/80d2e251ba.js" crossorigin="anonymous"></script>
+    <script src="/javascript/jquery-3.6.0.min.js"></script>
+    <script src="/summernote/summernote.min.js"></script>
+    
+    <style>
+      body{
+        font-family: 'Roboto', sans-serif;
+      }
+      a {
+        text-decoration: none;
+      }
+    </style>
+
+  <title>Shopee</title>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid col-9">
+          <a class="navbar-brand" href="/">SHOPEE</a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+      
+          <div class="collapse navbar-collapse" id="navbarColor01">
+            <ul class="navbar-nav me-auto">
+              <li class="nav-item">
+                <a class="nav-link active" href="/my-shop/homepage">shop của tôi
+                  <span class="visually-hidden">(current)</span>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link active" href="/admin/homepage">Dành cho Admin
+                </a>
+              </li>
+          </div>
+        </div>
+        <div>
+          <a href="/user/account/cart">
+            <button class="btn btn-primary">
+              <span class="d-inline" id="cart-count">0</span><i class="fas fa-2x fa-shopping-cart d-inline"></i>
+            </button>
+          </a>
+        </div>
+        <div class="col-3 row text-white  nav-link" id="user">
+        </div>
+      </nav>
+</body>
+<script>
+    const user=document.getElementById('user')
+    window.addEventListener('load',async()=>{
+      const response=await fetch('/user')
+      const data= await response.json()
+      if(data.user){
+        user.innerHTML=`<img src="${data.user.avatar}" class="rounded-circle col-md-2" style="height:30px"/>
+          <a href="/user/account/profile" class="text-decoration-none text-white">${data.user.firstName}</a> || 
+          <a href="/log-out" class="text-decoration-none text-white" >log out</a>`
+          document.getElementById('cart-count').innerHTML=`${data.user.Carts.length}`
+      }else{
+        user.innerHTML=`<div class="row"><a class="nav-link col-2 text-white" href="/login">login</a>
+          <a class="nav-link col-6 text-white" href="/register">register</a></div>`
+      }
+    })
+</script>
+
+

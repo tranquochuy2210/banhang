@@ -1,0 +1,27 @@
+<%-include ('../../partials/header') %>
+<div class="row">
+    <%-include('../sidebar')%>
+    <div class="col-10 mx-auto my-3">
+        <table class="table">
+            <thead>
+                <th>id</th>
+                <th>tên</th>
+                <th>doanh thu</th>
+                <th>chủ</th>
+                <th>trạng thái</th>
+            </thead>
+            <tbody>
+                <%shops.forEach((shop)=>{%>
+                    <tr>
+                        <td><%=shop.id%></td>
+                        <td><%=shop.name%></td>
+                        <td><%=shop.revenue%></td>
+                        <th><%=shop.User.firstName%> <%=shop.User.lastName%></th>
+                        <th><%=shop.status?'mở':'đóng'%></th>
+                    </tr>
+                <%})%>
+            </tbody>
+        </table>
+    </div>
+</div>
+<%-include ('../../partials/footer') %>

@@ -1,0 +1,42 @@
+<%-include ('./partials/header') %>
+
+<div class="container px-auto">
+    <h1>Login</h1>
+    <div class="error" style="color: red;"></div>
+    <form  class="col-4" >
+        <div class="mb-3">
+            <label for="email"  class="form-label">Email</label>
+            <input type="text" name="email" class="form-control" id="formGroupExampleInput" placeholder="Email">
+          </div>
+          <div class="mb-3">
+            <label for="password" class="form-label">Password</label>
+            <input type="password" name="password" class="form-control" id="password" placeholder="Password">
+          </div>
+          <button class="btn btn-primary"> login</button>
+    </form>
+    <a href="/register">Register</a>
+</div>
+<script>
+    const form=document.querySelector('form')
+    form.addEventListener('submit',async(e)=>{
+        e.preventDefault()
+        const email=form.email.value
+        const password=form.password.value
+        try{
+            const res=await fetch('/login',{
+                method: 'POST',
+                body:JSON.stringify({email,password}),
+                headers:{ 'Content-Type':'application/json'}
+            })
+            const data=await res.json()
+            if(data.success){
+                location.assign('/')
+            }else{
+                document.querySelector('.error').innerHTML=`${data.message}`
+            }
+        }catch(error){
+            console.log(error)
+        }
+    })
+</script>
+<%-include ('./partials/footer') %>

@@ -1,0 +1,90 @@
+<%- include ('../partials/header') %>
+
+<div class="fluid-container py-3 bg-light h-100 row">
+    <%-include ('./sidebar') %>
+    <div class="col-7 bg-white border-3 p-5">
+        <h1><%=shop.name%></h1>
+        <h2>doanh thu: <b><%=shop.revenue.toLocaleString("en-US")%></b> </h2>
+
+        <div>
+            <p class="text-danger" id="error"></p>
+        </div>
+        <form action="">
+            <input type="text" class="d-none" id="shop-id" value="<%=shop.id%>">
+            <div class="col-md-8 mb-3">
+                <div>
+                    <img src="<%=shop.image%>" alt="" height="150px" width="200px" id="shop-image">
+                    <div>
+                        <label for="change-image" >chỉnh sửa ảnh</label>
+                        <input type="file" class="form-control" name="shop" id="change-image">
+                    </div>
+                    
+                </div>
+                <label for="address" class="form-label"> địa chỉ</label>
+                <input type="text" class="form-control" id="address" name="address"  value="<%=shop.address%>" required>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="status" id="open" value="true" <%=shop.status?'checked':''%>>
+                <label class="form-check-label" for="flexRadioDefault1">
+                  mở cửa
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="status" id="close" value=""<%=!shop.status?'checked':''%> >
+                <label class="form-check-label" for="flexRadioDefault2">
+                  đóng cửa
+                </label>
+              </div>
+            
+            <div class="col-md-4 d-none" id="reopen">
+                <label for="address" class="form-label"> mở lại vào ngày</label>
+                <input type="date" class="form-control" id="reopen-on" name="reOpenOn" value="<%=shop.reOpenOn%>">
+            </div>
+            <div class="col-md-2">
+                <button class="btn btn-sm my-3 btn-primary">cập nhật</button>
+            </div>
+        </form>
+        
+    </div>
+</div>
+
+
+<%- include ('../partials/footer') %>
+<script>
+    const form=document.querySelector('form')
+    const closeBtn=document.getElementById('close')
+    const openBtn=document.getElementById('open')
+    const reopen=document.getElementById('reopen')
+    let reOpenOn=document.getElementById('reopen-on')
+    if(closeBtn.checked){
+        reopen.classList.remove('d-none')
+    }
+    closeBtn.addEventListener('click',()=>{
+        reopen.classList.remove('d-none')
+    })
+    openBtn.addEventListener('click',()=>{
+        reOpenOn.value=undefined
+        reopen.classList.add('d-none')
+    })
+    form.addEventListener('submit',async (e)=>{
+        e.preventDefault()
+        const formData=new FormData(form)
+        if(!form.status.value && !reOpenOn.value || new Date(reOpenOn.value).valueOf()<Date.now()){
+            return document.getElementById('error').innerHTML="ngày mở lại không hợp lệ"
+        }
+        const id=document.getElementById('shop-id').value
+        let response=await fetch(`/my-shop/edit-shop/${id}`,{
+            method:'PUT',
+            body:formData
+        })
+        let data=await response.json()
+        if(data.success){
+            location.reload()
+        }else{
+            return document.getElementById('error').innerHTML=data.message
+        }
+    }
+    )
+    
+</script>
+

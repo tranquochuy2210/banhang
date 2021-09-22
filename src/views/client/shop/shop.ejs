@@ -1,0 +1,69 @@
+<%- include ('../../partials/header') %>
+<div class="bg-light row min-h-100">
+    <p id="error"></p>
+    <div class="col-10 mx-auto bg-white">
+        <div class="row">
+            <div class="col-4 m-3 bg-light row"  style="border-radius: 5px;height: 150px;" >
+                <div class="col-6 my-3">
+                    <img src="<%=shop.image%>" alt="" style="height: 100;width: 200;">
+                </div>
+                <div class="col-6 my-3 text-center">
+                    <h3 ><%=shop.name%></h3>
+                    <button id="follow" class="btn <%=shop.followed?'btn-secondary':'btn-primary'%>"><%=shop.followed?'hủy theo dõi':'theo dõi'%></button>
+                </div>
+            </div>
+            <div class="col-7 row m-3 p-3">
+                <div class="col-6">
+                    <p>Sản phẩm: <%=shop.Items.length%></p>
+                </div>
+                <div class="col-6">
+                    <p>Đánh gía: <%=shop.rating%></p>
+                </div>
+                <div class="col-6">
+                    <p>Người theo dõi: <%=shop.followCount%></p>
+                </div>
+                <div class="col-6">
+                    <p>Tham gia: <%=shop.createdAt%></p>
+                </div>
+            </div>
+            <hr>
+        </div>
+        <div>
+            <h2>tất cả sản phẩm</h2>
+            <div class="row">
+                <%shop.Items.forEach((item)=>{%>
+                    <div class="card m-4 col-md-3" >                   
+                        <img src="<%=item.images[0]%>" class="card-img-top" height="250px">
+                        <div class="card-body">
+                          <h5 class="card-title"><%=item.name%></h5>
+                          <p class="text-danger">đã bán: <%= item.sold %></p>
+                          <p>còn lại: <%= item.stock %></p>
+                          <p class="card-text">giá gốc: <%=item.originalPrice%></p>
+                          <a href="/get-item/<%=item.id%>" class="btn btn-primary">xem</a>
+                        </div>
+                    </div>
+                <%})%>
+            </div>
+        </div>
+        
+    </div>
+</div>
+<script>
+    const error=document.getElementById('error')
+    const follow=document.getElementById('follow')
+    follow.addEventListener('click',async(e)=>{
+        let res
+        if(follow.classList.contains('btn-primary')){
+            res=await fetch('/add-follow/<%=shop.id%>')
+        }else{
+            res=await fetch('/delete-follow/<%=shop.id%>')
+        }
+        const data=await res.json()
+        if(data.success){
+            location.reload()
+        }else{
+            error.innerHTML=data.message
+        }
+    })
+</script>   
+<%- include ('../../partials/footer') %>

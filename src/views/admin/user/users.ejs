@@ -1,0 +1,63 @@
+<%-include ('../../partials/header') %>
+<div class="row">
+    <%-include('../sidebar')%>
+    <div class="col-10 mb-3 row">
+        <div id="message">
+        </div>
+        <table>
+            <thead>
+                <th>#</th>
+                <th>Email</th>
+                <th>Tên</th>
+                <th>Xem</th>
+                <th>Quyền</th>
+                <th>Đóng tài khoản</th>
+            </thead>
+            <tbody>
+                <%users.forEach((user)=>{%>
+                    <tr>
+                        <td><%=user.id%></td>
+                        <td><%=user.email%></td>
+                        <td><%=user.firstName%> <%=user.lastName%></td>
+                        <td><a href="/admin/user/<%=user.id%>"><span><i class="fas fa-search"></i></span></a>
+                        <td class="pe-3">
+                            <select name="role" id="role-<%=user.id%>" class="form-select" onchange="changeRole(this)">
+                                <option value="user" <%=user.role==='user'?'selected':''%>>user </option>
+                                <option value="admin" <%=user.role==='admin'?'selected':''%>>admin</option>
+                            </select>
+                        <td id="delete-<%=user.id%>" onclick="deleteAccount(this)" style="cursor:pointer" >xóa</td>
+                    </tr>
+                <%})%>
+            </tbody>
+        </table>
+    </div>
+</div>
+<script>
+    const message=document.getElementById('message')
+    const changeRole=async(element)=>{
+        const id=element.id.split('-')[1]
+        const res=await fetch(`/admin/change-role/${id}`)
+        const data= await res.json()
+        if(data.success){
+            message.innerHTML=`<p class="text-success">${data.message}</p>`
+            location.reload()
+        }else{
+            message.innerHTML=`<p class="text-danger">${data.message}</p>`
+        }
+    }
+    const deleteAccount=async(element)=>{
+        if(confirm('bạn có muốn xóa người dùng này?')){
+            const id=element.id.split('-')[1]
+            const res=await fetch(`/admin/delete-account/${id}`)
+            const data=await res.json()
+            if(data.success){
+                message.innerHTML=`<p class="text-success">${data.message}</p>`
+                location.reload()
+            }else{
+                message.innerHTML=`<p class="text-danger">${data.message}</p>`
+            }
+        }
+    }
+</script>
+
+<%-include ('../../partials/footer') %>

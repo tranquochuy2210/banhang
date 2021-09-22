@@ -1,0 +1,30 @@
+<%-include ('../../partials/header') %>
+<div class="row">
+    <%-include('../sidebar')%>
+    <div class="col-10 my-3">
+        <div class="my-3">
+            ><a href="/admin/main-categories">danh mục chính</a>
+            ><a href="/admin/categories/<%=mainCategory.id%>"><%=mainCategory.name%></a>
+            >thêm danh mục
+        </div>
+        <div id="message">
+            <%=message%>
+        </div>
+        <div class="col-6 mx-3">
+            <form action="/admin/add-category/<%=mainCategory.id%>" method="POST" enctype="multipart/form-data">
+                <div class="my-3">
+                    <label for="name" class="form-label">tên</label>
+                    <input type="text" class="form-control" name="name" id="name" required>
+                </div>
+                <div class="my-3">
+                    <label for="logo" class="form-label" >logo</label>
+                    <input type="file" class="form-control" name="category" id="logo" required>
+                </div>
+                <div class="my-3">
+                    <button class="btn btn-primary">tạo</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<%-include ('../../partials/footer') %>

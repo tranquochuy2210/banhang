@@ -1,0 +1,134 @@
+<%- include ('../partials/header') %>
+
+<div class="fluid-container py-3 bg-light h-100 row">
+    <%-include ('./sidebar') %>
+    <div class="col-7 bg-white border-3 p-5">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">id</th>
+                    <th scope="col">chọn</th>
+                    <th scope="col">item</th>
+                    <th scope="col">số lượng</th>
+                    <th scope="col">giá</th>
+                    <th scope="col">giá tổng</th>
+                </tr>
+            </thead>
+            <tbody>
+                <%carts.forEach((cart)=>{%>
+                    <tr class="cart">
+                        <td id="item-id-<%=cart.id%>"><%=cart.Item.id%></td>
+                        <td><input type="checkbox" class="check form-check-input" id="select-<%=cart.id%>"></td>
+                        <td ><%=cart.Item.name%></td>
+                        <td><input type="number" class="quantity" id="quantity-<%=cart.id%>" value="<%=cart.quantity%>" min="0"></td>
+                        <td class="price" id="price-<%=cart.id%>"><%=cart.Item.price%></td>
+                        <td class="sum" id="sum-<%=cart.id%>"></td>
+                    </tr>
+                <%})%>
+            </tbody>
+        </table>
+        <h2 class="text-center">Tổng cộng: <span id="total"></span></h2>
+        <div class="col-6 my-3">
+            <label for="address">Địa chỉ</label>
+            <input type="text" class="form-control" name="address" id="address">
+        </div>
+        <div class="col-6 my-3">
+            <select name="shippingCompany" class="form-select" id="shipping-company">
+                <%shippings.forEach((shipping)=>{%>
+                    <option value="<%=shipping.id%>"><%=shipping.name%></option>
+                <%})%>
+            </select>
+        </div>
+        
+        <div class="float-end">
+            <button class="btn btn-primary" id="payment">thanh toán</button>
+        </div>
+    </div>
+</div>
+<script>
+    carts=document.querySelectorAll('.cart')
+    const checks=document.querySelectorAll('.check')
+    const total=document.getElementById('total')
+    const paymentBtn=document.getElementById('payment')
+    const shippingCompany=document.getElementById('shipping-company')
+    const address=document.getElementById('address')
+    const updateTotal=()=>{
+            let totalValue=0
+            checks.forEach((check)=>{
+                if(check.checked){
+                    let id='sum-'+check.id.split('-')[1]
+                    let value=document.getElementById(id).innerHTML
+                    totalValue+=Number(value)
+                }
+            })
+            total.innerHTML=totalValue
+    }
+    checks.forEach((check)=>{
+        check.addEventListener('change',()=>{
+            updateTotal()
+        })
+    })
+    window.addEventListener('load',updateTotal)
+    carts.forEach((cart)=>{
+        const elements=cart.children
+        const updateSum=()=>{ 
+            elements[5].innerHTML=elements[3].querySelector('input').value*elements[4].innerHTML
+        }
+        window.addEventListener('load',updateSum)
+        elements[3].querySelector('input').addEventListener('change',()=>{
+            updateSum()
+            updateTotal()
+        })
+    })
+    paymentBtn.addEventListener('click',async()=>{
+        if(total.innerHTML==0){
+            return
+        }
+        try{
+            //create order first then add item into order via order_item
+            paymentBtn.setAttribute('disabled','disabled')
+            const res=await fetch('/add-order',{
+                method:'POST',
+                headers:{
+                    'Content-Type':'application/json'
+                },
+                body:JSON.stringify({address:address.value,shippingCompanyId:shippingCompany.value})
+            })
+            const data =await res.json()
+            const orderId=data.newOrder.id
+            for(let check of checks){
+                if(check.checked){
+                    let id=check.id.split('-')[1]
+                    const itemId=document.getElementById(`item-id-${id}`).innerHTML
+                    const quantity=document.getElementById(`quantity-${id}`).value
+                    const price=document.getElementById(`sum-${id}`).textContent
+                    await fetch('/add-order-item',{
+                        method:'POST',
+                        headers:{
+                            'Content-Type':'application/json'
+                        },
+                        body:JSON.stringify({
+                            itemId,
+                            quantity,
+                            orderId,
+                            price
+                        })
+                    })
+                    const res=await fetch(`/delete-cart/${id}`,{method:'DELETE'})
+                    const data=await res.json()
+                }
+            }
+            await fetch(`/order-closing/${orderId}`)
+            location.reload()
+        }catch(error){
+            console.log(error)
+        }
+    })
+    
+    
+    
+    
+    
+</script>
+
+<%- include ('../partials/footer') %>

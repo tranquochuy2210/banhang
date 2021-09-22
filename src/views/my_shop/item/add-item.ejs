@@ -1,0 +1,173 @@
+<%-include ("../../partials/header") %>
+<div class="fluid-container py-3 bg-light row">
+    <%-include ('../sidebar') %>
+    <div class="col-9 bg-white border-3 p-5">
+        <h1><%=shop.name%></h1>
+        <p class="text-danger"></p>
+        <p id="error" class="text-danger"></p>
+        <form class="row" >
+            <div class="col-12 my-2 row">
+                <div class="col-6">
+                    <label for="main-categories">Danh mục chính</label>
+                    <select class="form-select" id="main-categories" required>  
+                            <option value="">chọn danh mục chính</option> 
+                        <%mainCategories.forEach((mainCategory)=>{%>
+                            <option value="<%=mainCategory.id%>"><%=mainCategory.name%></option>
+                        <%})%>
+                      </select>
+                </div>
+                <div class="col-6">
+                    <label for="categories">Danh mục phụ</label>
+                    <select class="form-select" name="categoryId" id="categories" required>   
+                      </select>
+                </div>
+            </div>
+            <div class="col-7 ">
+                <label for="name">tên sản phẩm</label>
+                <input type="text" name="name" class="form-control" id="name" >
+            </div>
+            <div class="col-6">
+                <label for="images">ảnh sản phẩm</label>
+                <input type="file" name="images" class="form-control" id="images" multiple>
+            </div>
+            <div id="show-images">
+
+            </div>
+            
+            <div class="col-5">
+                <label for="material" class="form-label">chất liệu</label>
+                <input type="text" class="form-control" name="material" id="material" >
+            </div>
+            <div class="col-5">
+                <label for="original-price" class="form-label"> giá gốc</label>
+                <input type="number" class="form-control" step="1000" name="originalPrice" id="original-price" >
+            </div>
+            <div class="col-5">
+                <label for="discount" class="form-label">giảm giá</label>
+                <input type="number" class="form-control" name="discount" id="discount" >
+            </div>
+            <div class="col-5">
+                <label for="pick-up-time" class="form-label">thời gian lấy hàng (ngày)</label>
+                <input type="number" class="form-control" name="pickUpTime" id="pick-up-time" >
+            </div>
+            <div class="col-5">
+                <label for="stock" class="form-label">có trong kho</label>
+                <input type="number" class="form-control" name="stock" id="stock" >
+            </div>
+            <div class="col-10 m-5">
+                <h3>flash sale</h3>
+                
+                <div class="col-5">
+                    <label for="flash-sale-time" class="form-label" >thời điểm flash sale</label>
+                    <input type="datetime-local" class="form-control" id="flash-sale-time" >
+                </div>
+                <div class="col-5">
+                    <label for="percent" class="form-label">phần trăm giảm flash sale</label>
+                    <input type="number" class="form-control" name="percent" id="percent" >
+                    <label for="duration" class="form-label">Kéo dài(phút)</label>
+                    <input type="number" class="form-control" name="duration" id="duration" >
+                </div>
+            </div>
+            
+            <div class="col-12 my-3" >
+                <label for="summernote" class="form-label">mô tả</label>
+                <div>
+                    <textarea name="description" id="summernote" cols="30" rows="10"></textarea>
+                </div>
+            </div>
+            <div >
+                <button class="btn btn-primary">thêm sản phẩm</button>
+            </div>
+        </form>
+        
+    </div>
+    
+</div>
+
+
+<%-include ("../../partials/footer") %>
+<script>
+    $(document).ready(function() {
+        $('#summernote').summernote({
+        placeholder: 'Hello stand alone ui',
+        tabsize: 2,
+        height: 120,
+        toolbar: [
+          ['style', ['style']],
+          ['font', ['bold', 'underline', 'clear']],
+          ['color', ['color']],
+          ['para', ['ul', 'ol', 'paragraph']],
+          ['table', ['table']],
+          ['insert', ['link', 'picture', 'video']],
+          ['view', ['fullscreen', 'codeview', 'help']]
+        ]
+      });
+    });
+</script>
+
+<script>
+    const error=document.getElementById('error')
+    const form=document.querySelector('form')
+    const images=document.getElementById('images')
+    const stock=document.getElementById('stock')
+    const flashSaleTime=document.getElementById('flash-sale-time')
+    const percent=document.getElementById('percent')
+    const duration=document.getElementById('duration')
+    const description=document.getElementById('summernote')
+    const name=document.getElementById('name')
+    const discount=document.getElementById('discount')
+    const originalPrice=document.getElementById('original-price')
+    const material=document.getElementById('material')
+    const pickUpTime=document.getElementById('pick-up-time')
+    flashSaleTime.setAttribute('min',moment(Date.now()).format('YYYY-MM-DDTHH:mm') )
+    flashSaleTime.addEventListener('input',()=>{
+        percent.setAttribute('required','required')
+        duration.setAttribute('required','required')
+    })
+   
+    
+    form.addEventListener('submit',async(e)=>{
+        e.preventDefault()
+        const formData=new FormData()
+        const image=document.getElementById('images')
+        for (let file of image.files){
+            formData.append('items',file)
+        }
+        formData.append('categoryId',form.categoryId.value)
+        formData.append('name',name.value)
+        formData.append('description',description.value)
+        formData.append('material',material.value)
+        formData.append('originalPrice',originalPrice.value)
+        formData.append('discount',discount.value)
+        formData.append('pickUpTime',pickUpTime.value)
+        formData.append('stock',stock.value)
+        formData.append('flashSaleTime',flashSaleTime.value)
+        formData.append('flashSale',JSON.stringify({percent:percent.value,duration:duration.value}))
+       const res=await fetch('http://localhost:3000/my-shop/add-item',{
+            method:'POST',
+            body:formData,
+        })
+        const data=await res.json()
+        if(data.success){
+            location.assign('/my-shop/items')
+        }else{
+            error.innerHTML=data.message
+        }
+    })
+    const mainCategory=document.getElementById('main-categories')
+    const categories=document.getElementById('categories')
+    mainCategory.addEventListener('change',async(e)=>{
+        try{
+            const res=await fetch(`/my-shop/categories/${mainCategory.value}`)
+            const data=await res.json()
+            categories.innerHTML=''
+            data.categories.forEach((category)=>{
+                categories.insertAdjacentHTML('beforeend',`<option value="${category.id}">${category.name}</option>`)
+            })
+        }catch(error){
+            error.innerHTML=error.message
+        }
+    })
+</script>
+
+

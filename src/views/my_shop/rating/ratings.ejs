@@ -1,0 +1,55 @@
+<%- include ('../../partials/header') %>
+
+<div class="fluid-container py-3 bg-light h-100 row">
+    <%-include ('../sidebar') %>
+    <div class="col-9 bg-white border-3 p-5">
+        <h3>trung bình: <%=average%> </h3>
+        <h3>tổng: <%=JSON.stringify(rating)%> </h3>
+        <div>
+            <p class="text-danger" id="error"></p>
+        </div>
+        <table class="table">
+            <thead>
+                <th scope="col">sản phẩm</th>
+                <th scope="col">tên khách hàng</th>
+                <th scope="col">đánh giá</th>
+                <th scope="col">comment</th>       
+                <th scope="col">ngày</th>
+            </thead>
+            <tbody>
+                <%ratingItems.forEach((ratingItem)=>{%>
+                <tr>
+                    <td><%=ratingItem.ItemName%></td>
+                    <td><%=ratingItem.lastName%></td>
+                    <td><%=ratingItem.rating%></td>
+                    <td><%=ratingItem.comment%></td>
+                    <td><%=ratingItem.createdAt%></td>
+                </tr>    
+                <%})%>                
+            </tbody>
+        </table>
+    </div>
+</div>
+<%- include ('../../partials/footer') %>
+<script>
+    const deleteOrders=document.querySelectorAll('.delete-order')
+    deleteOrders.forEach((deleteOrder)=>{
+        deleteOrder.addEventListener('click',async(e)=>{
+            const itemId=e.target.id.split('-')[0]
+            const orderId=e.target.id.split('-')[1]
+            let res=await fetch('/order-item/delete-order-item',{
+                method:'DELETE',
+                body:JSON.stringify({itemId,orderId}),
+                headers:{
+                    'Content-Type':'application/json'
+                }            
+            })
+            const data=await res.json()
+            if(data.success){
+                location.reload()
+            }else{
+                document.getElementById('error').innerHTML=data.message
+            }
+        })
+    })
+</script>

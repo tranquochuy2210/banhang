@@ -1,0 +1,29 @@
+<%- include ('../partials/header') %>
+<div class="fluid-container py-3 h-100 bg-light row ">
+  <%-include ('./sidebar') %>
+  <div class="col-9 row">
+    <h2>Ví voucher</h2>
+    <div class="row">
+      <%vouchers.forEach((voucher)=>{%>
+        <div class="card col-md-3 m-3" style="height: 400px;">
+          <img src="<%=voucher.image%>" class="card-img-top" height="150px">
+          <div class="card-body">
+            <h5 class="card-title text-center"><%=voucher.Item.name%></h5>
+            <div class="text-center">
+              <h5 class="card-title text-danger"><%=voucher.percent%>%</h5>
+              <h5>hết hạn: <%=voucher.expirationDate%></h5>
+            </div>
+            <div style="height: 60px;">
+              <p class="card-text"><%=voucher.description%></p>
+            </div>
+            <div class="text-center">
+              <a href="/get-item/<%=voucher.Item.id%>" class="btn btn-primary">sử dụng ngay</a>
+            </div>
+          </div>
+        </div>
+        <%})%>
+    </div>
+  </div>
+</div>
+<%- include ('../partials/footer') %>
+

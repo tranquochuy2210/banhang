@@ -1,0 +1,41 @@
+<%-include ("../../partials/header") %>
+<div class="fluid-container py-3 bg-light row">
+    <%-include ('../sidebar') %>
+    <div class="col-9 bg-white border-3 p-5">
+        <h1><%=item.name%></h1>
+        <h2>Thêm voucher</h2>
+        <form action="/my-shop/add-voucher/<%=item.id%>" method="POST" class="row" enctype="multipart/form-data">
+            <div class="col-6 my-3">
+                <label for="image">ảnh</label>
+                <input type="file" name="voucher" class="form-control" id="image">
+            </div>
+            <div class="col-6 my-3">
+                <label for="">mô tả</label>
+                <input type="text" name="description" class="form-control" id="description">
+            </div>
+            <div class="col-6 my-3">
+                <label for="target">đối tượng</label>
+                <select name="target" id="targer" class="form-select">
+                    <option value="all">tất cả</option>
+                    <option value="follower">người theo dõi</option>
+                </select>
+            </div>
+            <div class="col-6 my-3">
+                <label for="percent">phần trăm giảm</label>
+                <input type="number" class="form-control" name="percent" id="percent">
+            </div>
+            <div class="col-6 my-3">
+                <label for="expiration-date" class="form-label">ngày hết hạn</label>
+                <input type="date" id="expiration-date" class="form-control" name="expirationDate" >
+            </div>
+            <div>
+                <button class="btn btn-primary">thêm</button>
+            </div>
+        </form>
+        
+    </div>
+    
+</div>
+
+
+<%-include ("../../partials/footer") %>

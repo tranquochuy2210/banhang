@@ -1,0 +1,19 @@
+<%- include ('../../partials/header') %>
+<div class="col-10 mx-auto">
+    <h1><%=category.name%></h1> 
+    
+    <div class="row" style="min-height: 70vh;">
+        <%items.forEach((item)=>{%>
+            <div class="card col-sm-2 px-3" style="height: 350px;">
+                <img src="<%=item.images[0]%>" height="200px" class="card-img-top" alt="...">
+                <div class="card-body text-center">
+                    <h5 class="card-title"><%=item.name%></h5>
+                    <p class="card-text"><%=item.originalPrice%> đ</p>
+                    <a href="/get-item/<%=item.id%>" class="btn btn-primary">xem</a>
+                </div>
+            </div>
+        <%})%>
+    </div>
+</div>
+    
+<%- include ('../../partials/footer') %>

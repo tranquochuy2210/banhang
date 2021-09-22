@@ -1,0 +1,62 @@
+<%-include ('../../partials/header') %>
+<div class="row">
+    <%-include('../sidebar')%>
+    <div class="col-10 my-3 row">
+        <div id="message"></div>
+        <div>
+                <a href="/admin/add-shipping-company">
+                    <button class="btn btn-primary  ">thêm công ty</button>
+                </a>
+            
+        </div>
+        <div class="col-8">
+            <table class="table table-striped ">
+                <thead>
+                    <th>#</th>
+                    <th>tên</th>
+                    <th>thời gian vận chuyển</th>
+                    <th>xóa</th>
+                </thead>
+                <tbody>
+                    <%shippingCompanies.forEach((shippingCompany)=>{%>
+                        <tr>
+                            <td>
+                                <%=shippingCompany.id%>
+                            </td>
+                            <td>
+                                <%=shippingCompany.name%>
+                            </td>
+                            <td>
+                                <input type="number" value="<%=shippingCompany.time%>" class="form-control" id="<%=shippingCompany.id%>" onchange="updateTime(this)">
+                            </td>
+                            <td>
+                                <a href="/admin/delete-shipping-company/<%=shippingCompany.id%>">xóa</a>
+                            </td>
+                        </tr>
+                    <%})%>
+                </tbody>
+            </table>
+        </div>
+        
+    </div>
+</div>
+<%-include ('../../partials/footer') %>
+<script>
+    const message=document.getElementById('message')
+    const updateTime=async(element)=>{
+        const time=element.value
+        const res=await fetch(`/admin/update-ship-time/${element.id}`,{
+            method:'POST',
+            body:JSON.stringify({time}),
+            headers:{
+                'Content-Type':'application/json'
+            }
+        })
+        const data=await res.json()
+        if(data.success){
+            message.innerHTML=`<p class="text-success">${data.message}</p>`
+        }else{
+            message.innerHTML=`<p class="text-danger">${data.message}</p>`
+        }
+    }
+</script>

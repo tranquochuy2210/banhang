@@ -1,0 +1,81 @@
+<%-include ('../../partials/header') %>
+<div class="row">
+    <%-include('../sidebar')%>
+    <div class="col-10 my-3">
+        <div>
+            <form action="/admin/add-footer" method="POST" class="row">
+                <div class="col-3">
+                    <label for="indexing">danh mục</label>
+                    <select name="indexing" id="indexing" class="form-select">
+                        <option value="customer care">Chăm sóc khách hàng</option>
+                        <option value="about me">Về shopee</option>
+                        <option value="contact">Liên hệ</option>
+                        <option value="check out">Thanh toán</option>
+                    </select>
+                </div>
+                <div class="col-2">
+                    <label for="title">title</label>
+                    <input type="text" name="title" class="form-control" id="title">
+                </div>
+                <div class="col-2">
+                    <label for="content">nội dung</label>
+                    <input type="text" name="content" class="form-control" id="content">
+                </div>
+                <div class="col-1">
+                    <br>
+                    <button class="btn btn-primary">tạo</button>
+                </div>
+            </form>
+        </div>
+        <div class="p-4">
+            <table class="table table-bordered">
+                <thead>
+                    <th>danh mục</th>
+                    <th>tên</th>
+                    <th>nội dung</th>
+                    <th>sửa</th>
+                    <th>xóa</th>
+                </thead>
+                <tbody>
+                    <%footers.forEach((footer)=>{%>
+                        <tr>
+                            <td>
+                                <select class="form-select" name="indexing" id="indexing-<%=footer.id%>">
+                                    <option value="customer care"  <%=footer.indexing=="customer care"?'selected':''%>>chăm sóc khách hàng</option>
+                                    <option value="about me" <%=footer.indexing=="about me"?'selected':''%>>về shopee</option>
+                                    <option value="contact" <%=footer.indexing=="contact"?'selected':''%>>liên hệ</option>
+                                    <option value="check out" <%=footer.indexing=="check out"?'selected':''%>>thanh toán</option>
+                                </select>
+                            </td>
+                            <td><input type="text" name="title" class="form-control" id="title-<%=footer.id%>" value="<%=footer.title%>"> </td>
+                            <td><input type="text" name="content" class="form-control" id="content-<%=footer.id%>" value="<%=footer.content%>"> </td>
+                            <td onclick="changeFooter(this)" id="footer-<%=footer.id%>" style="cursor: pointer;">sửa</td>
+                            <td><a href="/admin/delete-footer/<%=footer.id%>">xóa</a></td>
+                        </tr>
+                    <%})%>
+                    <tr></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<script>
+    const changeFooter=async(element)=>{
+        const id=element.id.split('-')[1]
+        const indexing=document.getElementById(`indexing-${id}`).value
+        const title=document.getElementById(`title-${id}`).value
+        const content=document.getElementById(`content-${id}`).value
+        const res=await fetch(`/admin/edit-footer/${id}`,{
+            method:'PUT',
+            body:JSON.stringify({indexing,title,content}),
+            headers:{
+                'Content-Type':'application/json'
+            }
+        })
+        const data=await res.json()
+        if(data.success){
+            location.reload()
+        }
+    }
+</script>
+<%-include ('../../partials/footer') %>

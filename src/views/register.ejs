@@ -1,0 +1,101 @@
+<%- include('./partials/header') %>
+
+<div class="container px-5">
+  <h1>Register</h1>
+  <form action="/register" method="POST" enctype="multipart/form-data">
+    <div class="col-md-8 mb-3">
+      <label for="email" class="form-label">Email</label>
+      <input type="email" class="form-control" id="email" name="email" placeholder="input your Email" required>
+    </div>
+    <div class="col-md-8 mb-3">
+      <label for="password" class="form-label">Password</label>
+      <input type="password" class="form-control" id="password" name="password" placeholder="Password" required>
+    </div>
+    <div class="row g-3 mb-3">
+      <div class="col-md-5 me-5">
+        <label for="first-name" class="form-label">First name</label>
+        <input type="text" class="form-control" id="first-name" name="firstName" placeholder="your first name">
+      </div>
+      <div class="col-md-5">
+        <label for="last-name" class="form-label">Last name</label>
+        <input type="text" class="form-control" id="last-name" name="lastName" placeholder="your last name" >
+      </div>
+    </div>
+    <div class="col-md-6">
+      <label for="avatar" class="form-label">Avatar</label>
+      <input type="file" class="form-control" id="avatar" name="avatar" placeholder="avatar" >
+    </div>
+    <div class="col-md-4 mb-3">
+      <label for="phone" class="form-label">phone</label>
+      <input type="tel" class="form-control" id="phone"  name="phone" placeholder="Phone number" >
+    </div> 
+   <div class="col-md-4 mb-3">
+     <label for="gender">Gender</label> 
+      <select name="gender" class="form-select" id="gender">
+          <option value="male">male</option>
+          <option value="female">female</option>
+          <option value="other">other</option>
+      </select>
+   </div>
+   <div class="col-md-10 row mb-3" >
+     <div class="col-6">
+        <label for="province">tỉnh /thành phố</label>
+        <select name="province" class="form-select" id="province" required>
+          <option value="">chọn tỉnh thành</option>
+        </select>
+     </div>
+     <div class="col-6">
+      <label for="district">quận/huyện</label>
+      <select name="district" class="form-select" id="district" required>
+        <option value="">chọn quận huyện</option>
+      </select>
+     </div>
+     <div class="col-6">
+      <label for="ward">xã/phường</label>
+      <select name="ward" class="form-select" id="ward" required>
+        <option value="">chọn xã phường</option>
+      </select>
+     </div>
+   </div>
+
+  <button class="btn btn-primary">register</button>  
+</form>
+<a href="/login">Login </a>
+</div>
+    
+<script>
+  const province=document.getElementById('province')
+  const district=document.getElementById('district')
+  const ward=document.getElementById('ward')
+  const form=document.querySelector('form')
+  window.addEventListener('load',async()=>{
+    try{
+      const res= await fetch('https://provinces.open-api.vn/api/')
+      const data=await res.json()
+      data.forEach((item)=>{
+        province.insertAdjacentHTML('beforeend',`<option value="${item.code}-${item.name}">${item.name}</option>`)
+      })
+    }catch(error){
+      console.log(error)
+    }
+  })
+  
+  province.addEventListener('change',async()=>{
+    const res=await fetch(`https://provinces.open-api.vn/api/p/${province.value.split('-')[0]}?depth=2`)
+    const data=await res.json()
+    district.innerHTML='<option value="">chọn quận huyện</option>'
+    data.districts.forEach((item)=>{
+        district.insertAdjacentHTML('beforeend',`<option value="${item.code}-${item.name}">${item.name}</option>`)
+    })
+  })
+
+  district.addEventListener('change',async()=>{
+    const res=await fetch(`https://provinces.open-api.vn/api/d/${district.value.split('-')[0]}?depth=2`)
+    const data=await res.json()
+    ward.innerHTML='<option value="">chọn xã/phường</option>'
+    data.wards.forEach((item)=>{
+        ward.insertAdjacentHTML('beforeend',`<option value="${item.code}-${item.name}">${item.name}</option>`)
+    })
+  })
+</script>
+<%- include('./partials/footer') %>

@@ -1,0 +1,22 @@
+<%- include ('../partials/header') %>
+    <div class="bg-light fluid-container py-3" >
+        <div class="row col-10 bg-white mx-auto" >
+            <h1><%=category.name%></h1>
+            <div class="row">
+                <%items.forEach((item)=>{%>
+                    <div class="card col-md-2">
+                        <img class="card-img-top" src="<%=item.images[0]%>" alt="Card image cap">
+                        <div class="card-body">
+                            <h5 class="card-title"><%=item.name%></h5>
+                            <p class="card-text"><%=item.description%></p>
+                            <a href="/item/get-item/<%=item.id%>" class="btn btn-primary">xem</a>
+                        </div>
+                    </div>
+                <%})%>
+            </div>
+            
+        </div>
+    </div>
+    
+    
+<%- include ('../partials/footer') %>

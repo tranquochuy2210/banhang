@@ -1,0 +1,132 @@
+<%- include ('../../partials/header') %>
+
+<div class="fluid-container py-3 bg-light row">
+    <%-include ('../sidebar') %>
+    <div class="col-9 bg-white border-3 p-5">
+        <h1>My shop:</h1>
+        <div>
+            <p class="text-danger" id="error"></p>
+        </div>
+        <table class="table">
+            <thead>
+                <th scope="col" onclick="sortByColumn(this)" class="sort-asc" id="col-0">#đơn hàng</th>
+                <th scope="col" onclick="sortByColumn(this)" class="sort-asc" id="col-1">sản phẩm</th>
+                <th scope="col" onclick="sortByColumn(this)" class="sort-asc" id="col-2">số lượng</th>
+                <th scope="col" onclick="sortByColumn(this)" class="sort-asc" id="col-3">người mua</th>
+                <th scope="col" onclick="sortByColumn(this)" class="sort-asc" id="col-4">ngày giao(dự kiến)</th>
+                <th scope="col" onclick="sortByColumn(this)" class="sort-asc" id="col-5" >trạng thái</th>
+                <th scope="col" onclick="sortByColumn(this)" class="sort-asc" id="col-6">thay đổi trạng thái</th>
+            </thead>
+            <tbody>
+                <%orders.forEach((order)=>{%>
+                <tr>
+                    <td><%=order.id%></td>
+                    <td><%=order.name%></td>
+                    <td><%=order.quantity%></td>
+                    <td><%=order.userName%></td>
+                    <td><%=order.deliveryDate%></td>
+                    <td><%=order.status%></td>
+                    <%if(order.status==='preparing'||order.status==='transporting'){%>
+                    <td id="<%=order.itemId%>-<%=order.id%>">
+                        <div class="dropdown">
+                            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                              đổi trạng thái
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                              <li><a class="dropdown-item" href="/my-shop/order/change-status/<%=order.id%>?status=preparing">đang chuẩn bị</a></li>
+                              <li><a class="dropdown-item" href="/my-shop/order/change-status/<%=order.id%>?status=transporting">đang vận chuyển</a></li>
+                              <li><a class="dropdown-item" href="/my-shop/order/change-status/<%=order.id%>?status=completed">đã hoàn thành</a></li>
+                            </ul>
+                          </div>
+                    </td>
+                    <%}%>
+                </tr>
+                <%})%>                
+            </tbody>
+        </table>
+        <%if(more){%>
+            <button class="float-end btn btn-sm btn-primary btn-default" id="get-more" onclick="getMore(this)" value="1">
+                more
+            </button>
+        <%}%>
+    </div>
+</div>
+
+
+
+<%- include ('../../partials/footer') %>
+<script>
+    const orders=document.querySelector('tbody')
+    const getMore = async (element ) => {
+        element.setAttribute('disabled','disabled')
+        const page = Number(element.value) + 1
+        try{
+            const res = await fetch (`/my-shop/orders?page=${page}`)
+            const data =await res.json()
+            const createTdElement=(data) =>{
+                const td= document.createElement('td')
+                td.innerHTML= data
+                return td
+            }
+            data.orders.forEach((order) => {
+                const tr=document.createElement('tr')
+                const idtd = createTdElement(order.id)
+                const nametd = createTdElement(order.name)
+                const quantitytd = createTdElement(order.quantity)
+                const usertd = createTdElement(order.userName)
+                const deliverytd= createTdElement(order.deliveryDate)
+                const statustd= createTdElement(order.status)
+                const actiontd = createTdElement('')
+                if (order.status==='preparing'||order.status==='transporting'){
+                    actiontd.innerHTML=`
+                    <td id="${order.itemId}-${order.id}">
+                        <div class="dropdown">
+                            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                              đổi trạng thái
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                              <li><a class="dropdown-item" href="/my-shop/order/change-status/${order.id}?status=preparing">đang chuẩn bị</a></li>
+                              <li><a class="dropdown-item" href="/my-shop/order/change-status/${order.id}?status=transporting">đang vận chuyển</a></li>
+                              <li><a class="dropdown-item" href="/my-shop/order/change-status/${order.id}?status=completed">đã hoàn thành</a></li>
+                            </ul>
+                          </div>
+                    </td>
+                    `
+                }
+                tr.append(...[ idtd, nametd, quantitytd, usertd, deliverytd, statustd, actiontd ])
+                orders.appendChild(tr)
+            })
+            element.value= page
+            element.removeAttribute('disabled')
+            if(!data.more){
+                element.classList.add('d-none')
+            }
+
+            
+        }catch(error){
+            console.log(error)
+        }
+    }
+    const sortByColumn=(element)=>{
+        const column = Number(element.id.split('-')[1])
+        let asc = element.classList.contains('sort-asc')?1:-1
+        const rows= Array.from(orders.querySelectorAll('tr'))
+        const sortedRows= rows.sort((a,b) => {
+            let aContext = a.querySelector(`td:nth-child(${column+1})`).textContent.trim()
+            let bContext = b.querySelector(`td:nth-child(${column+1})`).textContent.trim()
+            if(column===0 || column === 2){
+                aContext=Number(aContext)
+                bContext=Number(bContext)
+            }
+            return aContext>bContext?(1*asc):(-1*asc)
+        })
+        while (orders.firstChild){
+            orders.removeChild(orders.firstChild)
+        }
+        sortedRows.forEach((row)=>{
+            orders.append(row)
+        })
+        element.classList.toggle('sort-asc')
+    }
+    
+</script>

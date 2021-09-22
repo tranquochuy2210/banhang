@@ -1,0 +1,105 @@
+<%- include ('../partials/header') %>
+<div class="fluid-container py-3 bg-light row" style="min-height: 100%;">
+
+  <%-include ('./sidebar') %>  
+   <div class="col-7 ">
+       <div id="message">
+
+       </div>
+        <div class="row bg-white p-3 mb-3 ">
+            <button class="btn col-2 me-3 order-button" id="order-all">tất cả</button>
+            <button class="btn col-2 me-3 order-button" id="order-preparing">chờ lấy hàng</button>
+            <button class="btn col-2 me-3 order-button" id="order-transporting">đang giao</button>
+            <button class="btn col-2 me-3 order-button" id="order-completed">đã giao</button>
+            <button class="btn col-2 me-3 order-button" id="order-deleted">đã hủy</button>
+        </div>
+        <div class="col-7 h-100 w-100 bg-white px-3" >
+            <table class="table ">
+                <thead>
+                    <tr>
+                        <th>mã đơn hàng</th>
+                        <th>sản phẩm</th>
+                        <th>số lượng</th>
+                        <th>giá</th>
+                        <th>tình trạng</th>
+                        <th>địa chỉ</th>
+                        <th>xóa</th>
+                    </tr>
+                </thead>
+                <tbody id="order-display">
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+
+</div>
+<%- include ('../partials/footer') %>
+
+<script>
+    let ordersTable=document.getElementById('order-display')
+    let orderButtons=document.querySelectorAll('.order-button')
+    orderButtons.forEach((button)=>{
+        button.addEventListener('click',async (event)=>{
+            ordersTable.innerHTML=''
+            const status= event.target.id.split('-')[1]
+            let url=`/user/order?status=${status}`
+            let response=await fetch(url)
+            let data=await response.json()
+            data.orders.forEach((order)=>{
+                let row1=`<tr>
+                                <td rowspan="${order.OrderItems.length}">${order.id}</td>               
+                                <td>${order.OrderItems[0].Item.name}</td>
+                                <td>${order.OrderItems[0].quantity}</td>
+                                <td>${order.OrderItems[0].price}</td>
+                                <td rowspan="${order.OrderItems.length}">${order.status}</td>
+                                <td rowspan="${order.OrderItems.length}">${order.address}</td>
+                                <td rowspan="${order.OrderItems.length}"   style=":hover {cursor:pointer;}">
+                                    ${order.status==='deleted' || order.status==='completed' ?
+                                    `<button onclick="deleteOrder(this)" class="btn btn-default" id="order-${order.id}">xóa</button>`:
+                                    `<button onclick="cancelOrder(this)" class="btn btn-default" id="order-${order.id}">hủy đơn hàng</button>`
+                                    }
+                                </td>
+                            </tr>`
+                ordersTable.insertAdjacentHTML("beforeend",row1)
+                
+                for(let x=1;x < order.OrderItems.length;x++){
+                    let othersRow=`<tr>
+                                <td>${order.OrderItems[x].Item.name}</td>
+                                <td>${order.OrderItems[x].quantity}</td>
+                                <td>${order.OrderItems[x].price}</td>
+                            </tr>`
+                    ordersTable.insertAdjacentHTML("beforeend",othersRow)
+                }
+                // ordersTable.insertAdjacentHTML("beforeend",'<hr>')
+            })
+        })
+    })
+    const cancelOrder=async(element)=>{
+        if (confirm('Bạn có muốn hủy đơn hàng?')) {
+        const orderId=element.id.split('-')[1]
+        const res=await fetch(`/cancel-order/${orderId}`)
+        const data=await res.json()
+        if(data.success===true){
+            location.reload()
+        }else{
+            document.getElementById('message').innerHTML=data.message
+        }
+        }else{
+            return false;
+        }
+    }
+    const deleteOrder=async(element)=>{
+        const orderId=element.id.split('-')[1]
+        const res=await fetch(`/delete-order/${orderId}`,{
+            method:'DELETE'
+        })
+        const data=await res.json()
+        if(data.success===true){
+            location.reload()
+        }else{
+            document.getElementById('message').innerHTML=data.message
+        }
+    }
+
+</script>

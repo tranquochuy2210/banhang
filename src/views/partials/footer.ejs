@@ -1,0 +1,70 @@
+<footer class="bg-light py-3">
+    <div class="col-10 mx-auto">
+        <div class="row">
+            <div class="col-3">
+                <h6>CHĂM SÓC KHÁCH HÀNG</h6>
+                <div id="customer-care">
+                </div>
+            </div>
+            <div class="col-3">
+                <h6>VỀ SHOPEE</h6>
+                <div id="about-me">
+                </div>
+                
+            </div>
+            <div class="col-3">
+                <h6>THANH TOÁN</h6>
+                <div id="check-out">
+                </div>
+                
+            </div>
+            <div class="col-3">
+                <h6>THEO DÕI CHÚNG TÔI TRÊN</h6>
+                <div><i class="fab fa-facebook d-inline"></i><span class="d-inline"><a href="" class="text-decoration-none text-black"> facebook</a></span></div>
+                <div><i class="fab fa-instagram d-inline"></i><span class="d-inline"><a href="" class="text-decoration-none text-black"> instagram</a></span></div>
+                <div><i class="fab fa-linkedin d-inline"></i><span class="d-inline"><a href="" class="text-decoration-none text-black"> linkedin</a></span></div>
+            </div>
+            <hr>
+        </div>
+        <div class="text-center row" id="contact">
+            
+        </div>
+    </div>
+</footer>
+<script>
+    window.addEventListener('load',async()=>{
+        const customerCare=document.getElementById('customer-care')
+        const aboutMe=document.getElementById('about-me')
+        const checkOut=document.getElementById('check-out')
+        const contact=document.getElementById('contact')
+        const res=await fetch('/footers')
+        const data=await res.json()
+        const footerCustomerCare=data.footers.filter((footer)=>footer.indexing==="customer care")
+        const footerAboutMe=data.footers.filter((footer)=>footer.indexing==="about me")
+        const footerCheckOut=data.footers.filter((footer)=>footer.indexing==="check out")
+        const footerContact=data.footers.filter((footer)=>footer.indexing==="contact")
+        footerCustomerCare.forEach((item)=>{
+            customerCare.insertAdjacentHTML('beforeend',`<p style="font-size: small;">${item.title}</p>`)
+        })
+        footerAboutMe.forEach((item)=>{
+            aboutMe.insertAdjacentHTML('beforeend',`<p style="font-size: small;">${item.title}</p>`)
+        })
+        footerCheckOut.forEach((item)=>{
+            checkOut.insertAdjacentHTML('beforeend',`<p style="font-size: small;">${item.title}</p>`)
+        })
+        footerContact.forEach((item)=>{
+            contact.insertAdjacentHTML('beforeend',
+            `<div>
+                <p>${item.title}: ${item.content}</p>
+            </div>`)
+        })
+        
+    })
+</script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js" integrity="sha384-eMNCOe7tC1doHpGoWe/6oMVemdAVTMs2xqW4mwXrXsW0L84Iytr2wi5v2QjrP/xp" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.min.js" integrity="sha384-cn7l7gDp0eyniUwwAZgrzD06kc/tftFf19TOAs2zVinnD/C7E91j9yyk5//jjpt/" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
+<script src="/javascript/owl.carousel.js"></script>
+

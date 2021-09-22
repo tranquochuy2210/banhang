@@ -1,0 +1,37 @@
+
+<%- include ("../../partials/header") %>
+<section class="px-5 my-container my-3"  >
+    <h6><a href="/admin/users">quay lại</a></h6>
+    <div style="border: solid grey; width:35%;height: 80vh;padding: 30px ;margin: 0 auto; box-shadow: 10px 10px 5px rgb(168, 168, 168);line-height: 3;">
+          
+        <img src="<%=user.avatar%>" alt="" width="100px" height="100px" style="border-radius: 50%;display: block;border: solid 1px; margin: 5% auto;">
+        <h1>
+            <%=user.name%>   
+        </h1>
+        <div>
+            <span><strong>Email</strong> : <%=user.email%></span>
+        </div>
+        <div>
+            <span><strong>Phone</strong> : <%=user.phone%></span>
+        </div>
+        <div>
+            <span><strong>họ và tên</strong>: <%=user.firstName%> <%=user.lastName%></span>
+        </div>
+        <div>
+            <span><strong>giới tính</strong>: <%=user.gender%></span>
+        </div>
+        <div>
+            <span><strong>ngày sinh</strong>: <%=user.birthDate%></span>
+        </div>
+        <div>
+            <span><strong>Role</strong> : <%=user.role%></span>
+        </div>
+       <div>
+           <span><strong>Ngày Tham gia</strong> : <%=user.createdAt%></span>
+       </div>
+    </div>
+    
+</section>
+
+
+<%- include ("../../partials/footer") %>
